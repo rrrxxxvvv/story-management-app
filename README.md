@@ -69,7 +69,7 @@
 ### 开发环境搭建
 ```bash
 # 克隆项目
-git clone <repository-url>
+git clone https://github.com/rrrxxxvvv/story-management-app
 cd story-management-app
 
 # 安装依赖
