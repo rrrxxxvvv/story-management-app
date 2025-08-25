@@ -1,0 +1,66 @@
+.event-form {
+  padding: 24px;
+  width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.entity-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.entity-type-group {
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #111827;
+}
+
+.entity-type-group h4 {
+  margin: 0 0 12px 0;
+  color: #d1d5db;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.entity-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.entity-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.entity-checkbox:hover {
+  background-color: #374151;
+}
+
+.entity-checkbox input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.entity-label {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+.no-entities,
+.no-tags {
+  color: #9ca3af;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  background-color: #111827;
+  border-radius: 8px;
+  border: 1px solid #374151;
+}
+

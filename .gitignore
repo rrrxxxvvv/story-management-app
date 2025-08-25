@@ -1,0 +1,8 @@
+# 忽略构建产物目录
+dist/
+
+# 忽略依赖包目录
+node_modules/
+
+# 忽略发布版本目录
+release/
