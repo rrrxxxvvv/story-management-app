@@ -1,0 +1,43 @@
+:root {
+  --background-color-dark: #1a1a1a;
+  --text-color-dark: #ffffff;
+  --sidebar-background-dark: #2a2a2a;
+  --main-content-background-dark: #1f1f1f;
+  --card-background-dark: #2a2a2a;
+  --border-color-dark: #374151;
+  --primary-color-dark: #4f46e5;
+  --primary-hover-dark: #4338ca;
+
+  --background-color-light: #f9fafb;
+  --text-color-light: #111827;
+  --sidebar-background-light: #ffffff;
+  --main-content-background-light: #f3f4f6;
+  --card-background-light: #ffffff;
+  --border-color-light: #e5e7eb;
+  --primary-color-light: #4f46e5;
+  --primary-hover-light: #4338ca;
+}
+
+body.dark-theme {
+  --background-color: var(--background-color-dark);
+  --text-color: var(--text-color-dark);
+  --sidebar-background: var(--sidebar-background-dark);
+  --main-content-background: var(--main-content-background-dark);
+  --card-background: var(--card-background-dark);
+  --border-color: var(--border-color-dark);
+  --primary-color: var(--primary-color-dark);
+  --primary-hover: var(--primary-hover-dark);
+}
+
+body.light-theme {
+  --background-color: var(--background-color-light);
+  --text-color: var(--text-color-light);
+  --sidebar-background: var(--sidebar-background-light);
+  --main-content-background: var(--main-content-background-light);
+  --card-background: var(--card-background-light);
+  --border-color: var(--border-color-light);
+  --primary-color: var(--primary-color-light);
+  --primary-hover: var(--primary-hover-light);
+}
+
+

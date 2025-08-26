@@ -3,7 +3,11 @@ import { Entity, Tag } from '../../types';
 import EntityForm from '../forms/EntityForm';
 import './EntityManagement.css';
 
-const EntityManagement: React.FC = () => {
+interface EntityManagementProps {
+  currentProjectId: number | null;
+}
+
+const EntityManagement: React.FC<EntityManagementProps> = ({ currentProjectId }) => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [filteredEntities, setFilteredEntities] = useState<Entity[]>([]);
@@ -15,19 +19,23 @@ const EntityManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (currentProjectId) {
+      loadData();
+    }
+  }, [currentProjectId]);
 
   useEffect(() => {
     filterEntities();
   }, [entities, searchTerm, typeFilter, tagFilter]);
 
   const loadData = async () => {
+    if (!currentProjectId) return;
+    
     try {
       setLoading(true);
       const [entitiesData, tagsData] = await Promise.all([
-        window.electronAPI.entity.getAll(),
-        window.electronAPI.tag.getAll(),
+        window.electronAPI.entity.getAll(currentProjectId),
+        window.electronAPI.tag.getAll(currentProjectId),
       ]);
       setEntities(entitiesData);
       setTags(tagsData);
@@ -88,10 +96,15 @@ const EntityManagement: React.FC = () => {
 
   const handleFormSubmit = async (entityData: Partial<Entity>) => {
     try {
+      const dataWithProject = {
+        ...entityData,
+        projectId: currentProjectId!
+      };
+      
       if (selectedEntity) {
-        await window.electronAPI.entity.update(selectedEntity.id!, entityData);
+        await window.electronAPI.entity.update(selectedEntity.id!, dataWithProject);
       } else {
-        await window.electronAPI.entity.create(entityData);
+        await window.electronAPI.entity.create(dataWithProject);
       }
       setShowForm(false);
       setSelectedEntity(null);
@@ -107,19 +120,49 @@ const EntityManagement: React.FC = () => {
     setSelectedEntity(null);
   };
 
-  const getTypeLabel = (type: string) => {
+  const getEntityTypeLabel = (type: string) => {
     switch (type) {
       case 'character': return '人物';
       case 'item': return '物品';
       case 'faction': return '势力';
+      case 'event': return '事件';
       default: return type;
     }
   };
 
-  const getTagColor = (tagName: string) => {
-    const tag = tags.find(t => t.name === tagName);
-    return tag ? tag.color : '#6b7280';
+  const getEntityTypeIcon = (type: string) => {
+    switch (type) {
+      case 'character': return '👤';
+      case 'item': return '📦';
+      case 'faction': return '🏛️';
+      case 'event': return '⚡';
+      default: return '📄';
+    }
   };
+
+  const getEntityTypeColor = (type: string) => {
+    switch (type) {
+      case 'character': return '#3b82f6';
+      case 'item': return '#10b981';
+      case 'faction': return '#f59e0b';
+      case 'event': return '#ef4444';
+      default: return '#6b7280';
+    }
+  };
+
+  if (!currentProjectId) {
+    return (
+      <div className="view-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">📋</div>
+          <div className="empty-state-title">请选择项目</div>
+          <div className="empty-state-description">
+            选择一个项目来管理实体
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -133,7 +176,7 @@ const EntityManagement: React.FC = () => {
     <div className="view-container">
       <div className="view-header">
         <h1 className="view-title">实体管理</h1>
-        <p className="view-subtitle">管理故事中的人物、物品和势力</p>
+        <p className="view-subtitle">管理故事中的人物、物品、势力和事件</p>
         <div className="view-actions">
           <button className="btn btn-primary" onClick={handleCreateEntity}>
             ➕ 添加实体
@@ -163,6 +206,7 @@ const EntityManagement: React.FC = () => {
             <option value="character">人物</option>
             <option value="item">物品</option>
             <option value="faction">势力</option>
+            <option value="event">事件</option>
           </select>
         </div>
 
@@ -188,7 +232,15 @@ const EntityManagement: React.FC = () => {
               <div key={entity.id} className="entity-card">
                 <div className="entity-header">
                   <h3 className="entity-name">{entity.name}</h3>
-                  <span className="entity-type">{getTypeLabel(entity.type)}</span>
+                  <div 
+                    className="entity-type"
+                    style={{ 
+                      backgroundColor: getEntityTypeColor(entity.type),
+                      color: 'white'
+                    }}
+                  >
+                    {getEntityTypeIcon(entity.type)} {getEntityTypeLabel(entity.type)}
+                  </div>
                 </div>
                 
                 {entity.description && (
@@ -197,15 +249,21 @@ const EntityManagement: React.FC = () => {
                 
                 {entity.tags && entity.tags.length > 0 && (
                   <div className="entity-tags">
-                    {entity.tags.map((tagName) => (
-                      <span
-                        key={tagName}
-                        className="tag"
-                        style={{ backgroundColor: getTagColor(tagName) }}
-                      >
-                        {tagName}
-                      </span>
-                    ))}
+                    {entity.tags.map((tagName) => {
+                      const tag = tags.find(t => t.name === tagName);
+                      return (
+                        <span
+                          key={tagName}
+                          className="tag"
+                          style={{
+                            backgroundColor: tag?.color || '#6b7280',
+                            color: 'white'
+                          }}
+                        >
+                          {tagName}
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
                 
@@ -228,14 +286,27 @@ const EntityManagement: React.FC = () => {
           </div>
         ) : (
           <div className="empty-state">
-            <div className="empty-state-icon">👥</div>
-            <div className="empty-state-title">暂无实体</div>
-            <div className="empty-state-description">
+            <div className="empty-state-icon">
+              {typeFilter === 'character' ? '👤' :
+               typeFilter === 'item' ? '📦' :
+               typeFilter === 'faction' ? '🏛️' :
+               typeFilter === 'event' ? '⚡' : '📝'}
+            </div>
+            <div className="empty-state-title">
               {searchTerm || typeFilter !== 'all' || tagFilter !== 'all'
                 ? '没有找到符合条件的实体'
-                : '开始添加人物、物品或势力来管理你的故事'
+                : '暂无实体'
               }
             </div>
+            <div className="empty-state-description">
+              {searchTerm || typeFilter !== 'all' || tagFilter !== 'all'
+                ? '尝试调整筛选条件'
+                : '开始添加人物、物品、势力或事件来管理你的故事'
+              }
+            </div>
+            <button className="btn btn-primary" onClick={handleCreateEntity}>
+              添加第一个实体
+            </button>
           </div>
         )}
       </div>

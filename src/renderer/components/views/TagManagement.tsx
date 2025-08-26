@@ -3,20 +3,28 @@ import { Tag } from '../../types';
 import TagForm from '../forms/TagForm';
 import './TagManagement.css';
 
-const TagManagement: React.FC = () => {
+interface TagManagementProps {
+  currentProjectId: number | null;
+}
+
+const TagManagement: React.FC<TagManagementProps> = ({ currentProjectId }) => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadTags();
-  }, []);
+    if (currentProjectId) {
+      loadTags();
+    }
+  }, [currentProjectId]);
 
   const loadTags = async () => {
+    if (!currentProjectId) return;
+    
     try {
       setLoading(true);
-      const tagsData = await window.electronAPI.tag.getAll();
+      const tagsData = await window.electronAPI.tag.getAll(currentProjectId);
       setTags(tagsData);
     } catch (error) {
       console.error('Failed to load tags:', error);
@@ -49,10 +57,15 @@ const TagManagement: React.FC = () => {
 
   const handleFormSubmit = async (tagData: Partial<Tag>) => {
     try {
+      const dataWithProject = {
+        ...tagData,
+        projectId: currentProjectId!
+      };
+      
       if (selectedTag) {
-        await window.electronAPI.tag.update(selectedTag.id!, tagData);
+        await window.electronAPI.tag.update(selectedTag.id!, dataWithProject);
       } else {
-        await window.electronAPI.tag.create(tagData);
+        await window.electronAPI.tag.create(dataWithProject);
       }
       setShowForm(false);
       setSelectedTag(null);
@@ -78,6 +91,20 @@ const TagManagement: React.FC = () => {
   }, {} as Record<string, Tag[]>);
 
   const categories = Object.keys(tagsByCategory).sort();
+
+  if (!currentProjectId) {
+    return (
+      <div className="view-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">📋</div>
+          <div className="empty-state-title">请选择项目</div>
+          <div className="empty-state-description">
+            选择一个项目来管理标签
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

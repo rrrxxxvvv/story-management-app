@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Entity, Event, Tag } from '../../types';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  currentProjectId: number | null;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ currentProjectId }) => {
   const [stats, setStats] = useState({
     entities: 0,
     events: 0,
@@ -9,49 +13,67 @@ const Dashboard: React.FC = () => {
     characters: 0,
     items: 0,
     factions: 0,
+    eventEntities: 0,
   });
   const [recentEntities, setRecentEntities] = useState<Entity[]>([]);
-  const [recentEvents, setRecentEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    if (currentProjectId) {
+      loadDashboardData();
+    }
+  }, [currentProjectId]);
 
   const loadDashboardData = async () => {
+    if (!currentProjectId) return;
+    
     try {
       setLoading(true);
       
       // 获取所有数据
-      const [entities, events, tags] = await Promise.all([
-        window.electronAPI.entity.getAll(),
-        window.electronAPI.event.getAll(),
-        window.electronAPI.tag.getAll(),
+      const [entities, tags] = await Promise.all([
+        window.electronAPI.entity.getAll(currentProjectId),
+        window.electronAPI.tag.getAll(currentProjectId),
       ]);
 
       // 计算统计数据
       const characters = entities.filter(e => e.type === 'character').length;
       const items = entities.filter(e => e.type === 'item').length;
       const factions = entities.filter(e => e.type === 'faction').length;
+      const eventEntities = entities.filter(e => e.type === 'event').length;
 
       setStats({
         entities: entities.length,
-        events: events.length,
+        events: 0, // 保留兼容性
         tags: tags.length,
         characters,
         items,
         factions,
+        eventEntities,
       });
 
-      // 获取最近的实体和事件
+      // 获取最近的实体
       setRecentEntities(entities.slice(0, 5));
-      setRecentEvents(events.slice(0, 5));
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  if (!currentProjectId) {
+    return (
+      <div className="view-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">📋</div>
+          <div className="empty-state-title">请选择项目</div>
+          <div className="empty-state-description">
+            选择一个项目来查看概览
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -76,17 +98,17 @@ const Dashboard: React.FC = () => {
             {stats.entities}
           </div>
           <div style={{ fontSize: '14px', color: '#9ca3af', marginTop: '8px' }}>
-            人物: {stats.characters} | 物品: {stats.items} | 势力: {stats.factions}
+            人物: {stats.characters} | 物品: {stats.items} | 势力: {stats.factions} | 事件: {stats.eventEntities}
           </div>
         </div>
 
         <div className="content-section">
-          <div className="section-title">时间线事件</div>
+          <div className="section-title">自动时间线</div>
           <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#059669' }}>
-            {stats.events}
+            {stats.eventEntities}
           </div>
           <div style={{ fontSize: '14px', color: '#9ca3af', marginTop: '8px' }}>
-            记录的故事事件
+            从实体信息自动生成
           </div>
         </div>
 
@@ -102,7 +124,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* 最近活动 */}
-      <div className="content-grid two-columns">
+      <div className="content-grid">
         <div className="content-section">
           <div className="section-title">最近添加的实体</div>
           <div className="section-content">
@@ -122,8 +144,10 @@ const Dashboard: React.FC = () => {
                     <div>
                       <div style={{ fontWeight: '500' }}>{entity.name}</div>
                       <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                        {entity.type === 'character' ? '人物' : 
-                         entity.type === 'item' ? '物品' : '势力'}
+                        {entity.type === 'character' ? '👤 人物' : 
+                         entity.type === 'item' ? '📦 物品' : 
+                         entity.type === 'faction' ? '🏛️ 势力' : 
+                         entity.type === 'event' ? '⚡ 事件' : entity.type}
                       </div>
                     </div>
                     <div style={{ fontSize: '12px', color: '#6b7280' }}>
@@ -137,48 +161,7 @@ const Dashboard: React.FC = () => {
                 <div className="empty-state-icon">📝</div>
                 <div className="empty-state-title">暂无实体</div>
                 <div className="empty-state-description">
-                  开始添加人物、物品或势力来管理你的故事
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="content-section">
-          <div className="section-title">最近的时间线事件</div>
-          <div className="section-content">
-            {recentEvents.length > 0 ? (
-              <div>
-                {recentEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '12px 0',
-                      borderBottom: '1px solid #374151',
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontWeight: '500' }}>{event.name}</div>
-                      <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                        {event.worldTime && `世界时间: ${event.worldTime}`}
-                        {event.chapterNumber && ` | 第${event.chapterNumber}章`}
-                      </div>
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#6b7280' }}>
-                      {event.createdAt ? new Date(event.createdAt).toLocaleDateString() : ''}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <div className="empty-state-icon">⏰</div>
-                <div className="empty-state-title">暂无事件</div>
-                <div className="empty-state-description">
-                  在时间线中添加事件来记录故事发展
+                  开始添加人物、物品、势力或事件来管理你的故事
                 </div>
               </div>
             )}

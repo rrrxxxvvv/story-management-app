@@ -55,6 +55,10 @@ class StoryManagementApp {
       return this.dbManager.createProject(projectData);
     });
 
+    ipcMain.handle('project:getAll', async () => {
+      return this.dbManager.getAllProjects();
+    });
+
     ipcMain.handle('project:get', async (_, projectId) => {
       return this.dbManager.getProject(projectId);
     });
@@ -63,13 +67,17 @@ class StoryManagementApp {
       return this.dbManager.updateProject(projectId, projectData);
     });
 
+    ipcMain.handle('project:delete', async (_, projectId) => {
+      return this.dbManager.deleteProject(projectId);
+    });
+
     // 实体管理
     ipcMain.handle('entity:create', async (_, entityData) => {
       return this.dbManager.createEntity(entityData);
     });
 
-    ipcMain.handle('entity:getAll', async () => {
-      return this.dbManager.getAllEntities();
+    ipcMain.handle('entity:getAll', async (_, projectId) => {
+      return this.dbManager.getAllEntities(projectId);
     });
 
     ipcMain.handle('entity:update', async (_, entityId, entityData) => {
@@ -85,8 +93,8 @@ class StoryManagementApp {
       return this.dbManager.createTag(tagData);
     });
 
-    ipcMain.handle('tag:getAll', async () => {
-      return this.dbManager.getAllTags();
+    ipcMain.handle('tag:getAll', async (_, projectId) => {
+      return this.dbManager.getAllTags(projectId);
     });
 
     ipcMain.handle('tag:update', async (_, tagId, tagData) => {
@@ -102,8 +110,8 @@ class StoryManagementApp {
       return this.dbManager.createEvent(eventData);
     });
 
-    ipcMain.handle('event:getAll', async () => {
-      return this.dbManager.getAllEvents();
+    ipcMain.handle('event:getAll', async (_, projectId) => {
+      return this.dbManager.getAllEvents(projectId);
     });
 
     ipcMain.handle('event:update', async (_, eventId, eventData) => {

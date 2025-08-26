@@ -10,25 +10,26 @@ import './MainContent.css';
 
 interface MainContentProps {
   currentView: NavigationItem;
+  currentProjectId: number | null;
 }
 
-const MainContent: React.FC<MainContentProps> = ({ currentView }) => {
+const MainContent: React.FC<MainContentProps> = ({ currentView, currentProjectId }) => {
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard currentProjectId={currentProjectId} />;
       case 'project-settings':
-        return <ProjectSettings />;
+        return <ProjectSettings currentProjectId={currentProjectId} />;
       case 'entities':
-        return <EntityManagement />;
+        return <EntityManagement currentProjectId={currentProjectId} />;
       case 'story-arcs':
-        return <StoryArcs />;
+        return <StoryArcs currentProjectId={currentProjectId} />;
       case 'timeline':
-        return <Timeline />;
+        return <Timeline currentProjectId={currentProjectId} />;
       case 'tags':
-        return <TagManagement />;
+        return <TagManagement currentProjectId={currentProjectId} />;
       default:
-        return <Dashboard />;
+        return <Dashboard currentProjectId={currentProjectId} />;
     }
   };
 

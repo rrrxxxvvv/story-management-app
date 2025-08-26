@@ -48,15 +48,19 @@ const EntityForm: React.FC<EntityFormProps> = ({ entity, tags, onSubmit, onCance
     }));
   };
 
+  const handleCustomFieldChange = (key: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      customFields: {
+        ...prev.customFields,
+        [key]: value,
+      },
+    }));
+  };
+
   const handleAddCustomField = () => {
     if (newCustomField.key && newCustomField.value) {
-      setFormData(prev => ({
-        ...prev,
-        customFields: {
-          ...prev.customFields,
-          [newCustomField.key]: newCustomField.value,
-        },
-      }));
+      handleCustomFieldChange(newCustomField.key, newCustomField.value);
       setNewCustomField({ key: '', value: '' });
     }
   };
@@ -81,33 +85,212 @@ const EntityForm: React.FC<EntityFormProps> = ({ entity, tags, onSubmit, onCance
     onSubmit(formData);
   };
 
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'character': return '人物';
-      case 'item': return '物品';
-      case 'faction': return '势力';
-      default: return type;
+  const getTypeSpecificFields = () => {
+    switch (formData.type) {
+      case 'character':
+        return (
+          <>
+            <div className="form-group">
+              <label>出生日期</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：第三纪元 2941年"
+                value={formData.customFields.birthDate || ''}
+                onChange={(e) => handleCustomFieldChange('birthDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>死亡日期</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：第三纪元 3019年"
+                value={formData.customFields.deathDate || ''}
+                onChange={(e) => handleCustomFieldChange('deathDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>职业/身份</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：国王、法师、盗贼"
+                value={formData.customFields.occupation || ''}
+                onChange={(e) => handleCustomFieldChange('occupation', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>所属势力</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：刚铎王国"
+                value={formData.customFields.affiliation || ''}
+                onChange={(e) => handleCustomFieldChange('affiliation', e.target.value)}
+              />
+            </div>
+          </>
+        );
+      case 'item':
+        return (
+          <>
+            <div className="form-group">
+              <label>创造日期</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：第一纪元 500年"
+                value={formData.customFields.creationDate || ''}
+                onChange={(e) => handleCustomFieldChange('creationDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>发现日期</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：第三纪元 2941年"
+                value={formData.customFields.discoveryDate || ''}
+                onChange={(e) => handleCustomFieldChange('discoveryDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>创造者</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：精灵工匠"
+                value={formData.customFields.creator || ''}
+                onChange={(e) => handleCustomFieldChange('creator', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>材质</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：秘银、龙鳞"
+                value={formData.customFields.material || ''}
+                onChange={(e) => handleCustomFieldChange('material', e.target.value)}
+              />
+            </div>
+          </>
+        );
+      case 'faction':
+        return (
+          <>
+            <div className="form-group">
+              <label>成立日期</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：第二纪元 3320年"
+                value={formData.customFields.foundingDate || ''}
+                onChange={(e) => handleCustomFieldChange('foundingDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>解散日期</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：第三纪元 3019年"
+                value={formData.customFields.dissolutionDate || ''}
+                onChange={(e) => handleCustomFieldChange('dissolutionDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>创始人</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：伊西尔杜"
+                value={formData.customFields.founder || ''}
+                onChange={(e) => handleCustomFieldChange('founder', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>总部位置</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：米那斯提力斯"
+                value={formData.customFields.headquarters || ''}
+                onChange={(e) => handleCustomFieldChange('headquarters', e.target.value)}
+              />
+            </div>
+          </>
+        );
+      case 'event':
+        return (
+          <>
+            <div className="form-group">
+              <label>开始时间</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：第三纪元 3018年春"
+                value={formData.customFields.startTime || ''}
+                onChange={(e) => handleCustomFieldChange('startTime', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>结束时间</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：第三纪元 3019年春"
+                value={formData.customFields.endTime || ''}
+                onChange={(e) => handleCustomFieldChange('endTime', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>发生地点</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：末日火山"
+                value={formData.customFields.location || ''}
+                onChange={(e) => handleCustomFieldChange('location', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>参与者</label>
+              <input
+                type="text"
+                className="input"
+                placeholder="例如：弗罗多、山姆、咕噜"
+                value={formData.customFields.participants || ''}
+                onChange={(e) => handleCustomFieldChange('participants', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>事件结果</label>
+              <textarea
+                className="input"
+                placeholder="描述事件的结果和影响"
+                value={formData.customFields.outcome || ''}
+                onChange={(e) => handleCustomFieldChange('outcome', e.target.value)}
+                rows={3}
+              />
+            </div>
+          </>
+        );
+      default:
+        return null;
     }
   };
-
-  const getTagsByCategory = (category: string) => {
-    return tags.filter(tag => tag.category === category);
-  };
-
-  const categories = [...new Set(tags.map(tag => tag.category))];
 
   return (
     <div className="entity-form">
       <div className="form-header">
-        <h2>{entity ? '编辑实体' : '创建实体'}</h2>
-        <button className="close-btn" onClick={onCancel}>✕</button>
+        <h2>{entity ? '编辑实体' : '添加实体'}</h2>
+        <button className="close-btn" onClick={onCancel}>×</button>
       </div>
 
-      <form onSubmit={handleSubmit} className="form-content">
-        {/* 基本信息 */}
-        <div className="form-section">
-          <h3>基本信息</h3>
-          
+      <form onSubmit={handleSubmit}>
+        <div className="form-body">
           <div className="form-group">
             <label>名称 *</label>
             <input
@@ -121,114 +304,157 @@ const EntityForm: React.FC<EntityFormProps> = ({ entity, tags, onSubmit, onCance
           </div>
 
           <div className="form-group">
-            <label>类型</label>
+            <label>类型 *</label>
             <select
               className="input"
               value={formData.type}
               onChange={(e) => handleInputChange('type', e.target.value as Entity['type'])}
             >
-              <option value="character">人物</option>
-              <option value="item">物品</option>
-              <option value="faction">势力</option>
+              <option value="character">👤 人物</option>
+              <option value="item">📦 物品</option>
+              <option value="faction">🏛️ 势力</option>
+              <option value="event">⚡ 事件</option>
             </select>
           </div>
 
           <div className="form-group">
             <label>描述</label>
             <textarea
-              className="input textarea"
+              className="input"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="输入实体描述"
+              placeholder="输入详细描述"
               rows={4}
             />
           </div>
-        </div>
 
-        {/* 标签选择 */}
-        <div className="form-section">
-          <h3>标签</h3>
-          {categories.length > 0 ? (
-            categories.map(category => {
-              const categoryTags = getTagsByCategory(category);
-              if (categoryTags.length === 0) return null;
-              
-              return (
-                <div key={category} className="tag-category">
-                  <h4>{category}</h4>
-                  <div className="tag-list">
-                    {categoryTags.map(tag => (
-                      <label key={tag.id} className="tag-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={formData.tags.includes(tag.name)}
-                          onChange={() => handleTagToggle(tag.name)}
-                        />
-                        <span
-                          className="tag-label"
-                          style={{ backgroundColor: tag.color }}
-                        >
-                          {tag.name}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <p className="no-tags">暂无可用标签，请先在标签管理中创建标签</p>
-          )}
-        </div>
+          {/* 类型特定字段 */}
+          {getTypeSpecificFields()}
 
-        {/* 自定义字段 */}
-        <div className="form-section">
-          <h3>自定义字段</h3>
-          
-          {Object.entries(formData.customFields).map(([key, value]) => (
-            <div key={key} className="custom-field">
-              <div className="custom-field-content">
-                <strong>{key}:</strong> {String(value)}
-              </div>
-              <button
-                type="button"
-                className="btn btn-danger btn-small"
-                onClick={() => handleRemoveCustomField(key)}
-              >
-                删除
-              </button>
+          {/* 通用字段 */}
+          <div className="form-group">
+            <label>首次出现</label>
+            <input
+              type="text"
+              className="input"
+              placeholder="章节号或时间，例如：第1章 或 第三纪元 3018年"
+              value={formData.customFields.firstAppearance || ''}
+              onChange={(e) => handleCustomFieldChange('firstAppearance', e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>最后出现</label>
+            <input
+              type="text"
+              className="input"
+              placeholder="章节号或时间，例如：第20章 或 第三纪元 3019年"
+              value={formData.customFields.lastAppearance || ''}
+              onChange={(e) => handleCustomFieldChange('lastAppearance', e.target.value)}
+            />
+          </div>
+
+          {/* 标签选择 */}
+          <div className="form-group">
+            <label>标签</label>
+            <div className="tag-selection">
+              {tags.map(tag => (
+                <button
+                  key={tag.id}
+                  type="button"
+                  className={`tag-option ${formData.tags.includes(tag.name) ? 'selected' : ''}`}
+                  style={{
+                    backgroundColor: formData.tags.includes(tag.name) ? tag.color : 'transparent',
+                    borderColor: tag.color,
+                    color: formData.tags.includes(tag.name) ? 'white' : tag.color,
+                  }}
+                  onClick={() => handleTagToggle(tag.name)}
+                >
+                  {tag.name}
+                </button>
+              ))}
             </div>
-          ))}
+          </div>
 
-          <div className="add-custom-field">
-            <div className="custom-field-inputs">
-              <input
-                type="text"
-                className="input"
-                placeholder="字段名"
-                value={newCustomField.key}
-                onChange={(e) => setNewCustomField(prev => ({ ...prev, key: e.target.value }))}
-              />
-              <input
-                type="text"
-                className="input"
-                placeholder="字段值"
-                value={newCustomField.value}
-                onChange={(e) => setNewCustomField(prev => ({ ...prev, value: e.target.value }))}
-              />
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleAddCustomField}
-              >
-                添加
-              </button>
+          {/* 自定义字段 */}
+          <div className="form-group">
+            <label>其他自定义字段</label>
+            <div className="custom-fields">
+              {Object.entries(formData.customFields).map(([key, value]) => {
+                // 跳过已经在类型特定字段中显示的字段
+                const typeSpecificKeys = {
+                  character: ['birthDate', 'deathDate', 'occupation', 'affiliation'],
+                  item: ['creationDate', 'discoveryDate', 'creator', 'material'],
+                  faction: ['foundingDate', 'dissolutionDate', 'founder', 'headquarters'],
+                  event: ['startTime', 'endTime', 'location', 'participants', 'outcome']
+                };
+                const commonKeys = ['firstAppearance', 'lastAppearance'];
+                const skipKeys = [...(typeSpecificKeys[formData.type] || []), ...commonKeys];
+                
+                if (skipKeys.includes(key)) return null;
+
+                return (
+                  <div key={key} className="custom-field">
+                    <input
+                      type="text"
+                      className="input field-key"
+                      value={key}
+                      onChange={(e) => {
+                        const newKey = e.target.value;
+                        const newCustomFields = { ...formData.customFields };
+                        delete newCustomFields[key];
+                        newCustomFields[newKey] = value;
+                        handleInputChange('customFields', newCustomFields);
+                      }}
+                      placeholder="字段名"
+                    />
+                    <input
+                      type="text"
+                      className="input field-value"
+                      value={value}
+                      onChange={(e) => handleCustomFieldChange(key, e.target.value)}
+                      placeholder="字段值"
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-small"
+                      onClick={() => handleRemoveCustomField(key)}
+                    >
+                      删除
+                    </button>
+                  </div>
+                );
+              })}
+              
+              <div className="custom-field">
+                <input
+                  type="text"
+                  className="input field-key"
+                  value={newCustomField.key}
+                  onChange={(e) => setNewCustomField(prev => ({ ...prev, key: e.target.value }))}
+                  placeholder="新字段名"
+                />
+                <input
+                  type="text"
+                  className="input field-value"
+                  value={newCustomField.value}
+                  onChange={(e) => setNewCustomField(prev => ({ ...prev, value: e.target.value }))}
+                  placeholder="字段值"
+                />
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-small"
+                  onClick={handleAddCustomField}
+                  disabled={!newCustomField.key || !newCustomField.value}
+                >
+                  添加
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* 表单操作 */}
-        <div className="form-actions">
+        <div className="form-footer">
           <button type="button" className="btn btn-secondary" onClick={onCancel}>
             取消
           </button>

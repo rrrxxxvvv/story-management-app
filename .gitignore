@@ -6,3 +6,6 @@ node_modules/
 
 # 忽略发布版本目录
 release/
+
+# 忽略IDE配置文件
+.idea/

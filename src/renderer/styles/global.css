@@ -1,3 +1,6 @@
+/* Import theme variables */
+@import url('./theme.css');
+
 * {
   box-sizing: border-box;
 }
@@ -10,8 +13,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #1a1a1a;
-  color: #ffffff;
+  background-color: var(--background-color);
+  color: var(--text-color);
   overflow: hidden;
 }
 
@@ -21,14 +24,14 @@ body {
   display: flex;
 }
 
-/* 滚动条样式 */
+/* Scrollbar styles */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #2a2a2a;
+  background: var(--sidebar-background);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -40,7 +43,7 @@ body {
   background: #777;
 }
 
-/* 按钮样式 */
+/* Button styles */
 .btn {
   padding: 8px 16px;
   border: none;
@@ -52,12 +55,12 @@ body {
 }
 
 .btn-primary {
-  background-color: #4f46e5;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #4338ca;
+  background-color: var(--primary-hover);
 }
 
 .btn-secondary {
@@ -78,31 +81,31 @@ body {
   background-color: #b91c1c;
 }
 
-/* 输入框样式 */
+/* Input styles */
 .input {
   padding: 8px 12px;
-  border: 1px solid #374151;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background-color: #2a2a2a;
-  color: white;
+  background-color: var(--card-background);
+  color: var(--text-color);
   font-size: 14px;
 }
 
 .input:focus {
   outline: none;
-  border-color: #4f46e5;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-/* 卡片样式 */
+/* Card styles */
 .card {
-  background-color: #2a2a2a;
+  background-color: var(--card-background);
   border-radius: 8px;
   padding: 16px;
-  border: 1px solid #374151;
+  border: 1px solid var(--border-color);
 }
 
-/* 标签样式 */
+/* Tag styles */
 .tag {
   display: inline-block;
   padding: 4px 8px;
@@ -112,30 +115,30 @@ body {
   margin: 2px;
 }
 
-/* 表格样式 */
+/* Table styles */
 .table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #2a2a2a;
+  background-color: var(--card-background);
 }
 
 .table th,
 .table td {
   padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #374151;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .table th {
-  background-color: #1f2937;
+  background-color: var(--main-content-background);
   font-weight: 600;
 }
 
 .table tr:hover {
-  background-color: #374151;
+  background-color: var(--main-content-background);
 }
 
-/* 工具提示 */
+/* Tooltip styles */
 .tooltip {
   position: relative;
   display: inline-block;
@@ -162,4 +165,5 @@ body {
   visibility: visible;
   opacity: 1;
 }
+
 

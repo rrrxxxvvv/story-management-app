@@ -10,8 +10,9 @@ export interface Project {
 
 export interface Entity {
   id?: number;
+  projectId?: number;
   name: string;
-  type: 'character' | 'item' | 'faction';
+  type: 'character' | 'item' | 'faction' | 'event';
   description?: string;
   tags?: string[];
   customFields?: Record<string, any>;
@@ -21,6 +22,7 @@ export interface Entity {
 
 export interface Tag {
   id?: number;
+  projectId?: number;
   name: string;
   color: string;
   category: string;
@@ -30,6 +32,7 @@ export interface Tag {
 
 export interface Event {
   id?: number;
+  projectId?: number;
   name: string;
   description?: string;
   worldTime?: string;
@@ -52,5 +55,11 @@ export type NavigationItem =
 export interface NavigationState {
   currentView: NavigationItem;
   setCurrentView: (view: NavigationItem) => void;
+}
+
+export interface AppState {
+  currentProjectId: number | null;
+  projects: Project[];
+  theme: 'light' | 'dark';
 }
 

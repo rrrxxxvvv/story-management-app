@@ -1,6 +1,24 @@
 import React from 'react';
 
-const StoryArcs: React.FC = () => {
+interface StoryArcsProps {
+  currentProjectId: number | null;
+}
+
+const StoryArcs: React.FC<StoryArcsProps> = ({ currentProjectId }) => {
+  if (!currentProjectId) {
+    return (
+      <div className="view-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">📋</div>
+          <div className="empty-state-title">请选择项目</div>
+          <div className="empty-state-description">
+            选择一个项目来管理故事弧
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="view-container">
       <div className="view-header">
